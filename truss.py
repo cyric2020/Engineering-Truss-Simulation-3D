@@ -215,3 +215,8 @@ class Truss:
         # Save the stresses and forces for later
         self.Stresses = stresses
         self.Forces = forces
+
+        # Stop the timer
+        end = time.time()
+
+        self.solveTime = end - start
