@@ -6,7 +6,8 @@ bridge = Truss()
 
 # bridge.loadTruss('trusses/smol.yaml')
 # bridge.loadTruss('trusses/pyramid.yaml')
-bridge.loadTruss('trusses/line.yaml')
+# bridge.loadTruss('trusses/line.yaml')
+bridge.loadTruss('trusses/big.yaml')
 
 bridge.solveTruss()
 
@@ -24,5 +25,8 @@ with open('report.txt', 'w') as f:
 
 trussRenderer = ViewTruss()
 
-trussRenderer.showTrussDisplacements(bridge, bridge.U, bridge.Forces, MemberForces=True, ExternalForces=False)
-trussRenderer.showTruss(bridge, NodeLabels=False)
+trussRenderer.showTrussDisplacements(bridge, bridge.U, bridge.Forces, MemberForces=False, ExternalForces=False)
+# trussRenderer.showTruss(bridge, NodeLabels=False)
+
+trussRenderer.cube_full()
+trussRenderer.show(bridge)
