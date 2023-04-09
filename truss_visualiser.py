@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import numpy as np
 
 class ViewTruss:
     def __init__(self):
@@ -41,9 +42,6 @@ class ViewTruss:
 
             # Plot the member
             self.ax.plot([x1, x2], [y1, y2], [z1, z2], 'k:')
-
-        # Show the plot
-        plt.show()
 
     def showTrussDisplacements(self, truss, displacements, forces, MemberLabels=False, MemberForces=False, ExternalForces=False):
         # Loop through all the nodes and move them by the displacements
@@ -120,3 +118,25 @@ class ViewTruss:
                 if z != 0:
                     self.ax.quiver(node[0], node[1], node[2], 0, 0, arrowLength, arrow_length_ratio=arrowHead, color='r')
                     self.ax.text(node[0], node[1], node[2]+arrowLength, str(z), color='k', backgroundcolor='w', horizontalalignment='center', verticalalignment='bottom', transform=self.ax.transData)
+
+    def cube_full(self):
+        # Make the top bottom left and right margins 0
+        plt.subplots_adjust(left=0, right=1, bottom=0, top=1)
+
+    def show(self, truss):
+        # set equal limits for all axes
+        # get the maximum range of the axes
+        max_range = np.array([truss.Nodes[:,0].max()-truss.Nodes[:,0].min(), truss.Nodes[:,1].max()-truss.Nodes[:,1].min(), truss.Nodes[:,2].max()-truss.Nodes[:,2].min()]).max() / 2.0
+
+        # get the mid point of the axes
+        mid_x = (truss.Nodes[:,0].max()+truss.Nodes[:,0].min()) * 0.5
+        mid_y = (truss.Nodes[:,1].max()+truss.Nodes[:,1].min()) * 0.5
+        mid_z = (truss.Nodes[:,2].max()+truss.Nodes[:,2].min()) * 0.5
+
+        # set the axes limits
+        self.ax.set_xlim(mid_x - max_range, mid_x + max_range)
+        self.ax.set_ylim(mid_y - max_range, mid_y + max_range)
+        self.ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+        # Show the plot
+        plt.show()
