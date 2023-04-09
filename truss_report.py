@@ -110,6 +110,7 @@ class ReportGenerator:
         info += f"Number of Materials: {len(self.truss.Materials)}\n"
         info += f"Number of External Forces: {self.truss.ExternalForces.shape[0]}\n"
         info += f"Number of Supports: {self.truss.Supports.shape[0]}\n"
+        info += f"Solve Time: {round(self.truss.solveTime, 6)} seconds\n"
         info += f"------------------------------------------------\n\n"
 
         return info
