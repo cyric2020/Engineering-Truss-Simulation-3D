@@ -202,15 +202,16 @@ class Truss:
             # Get the nodal displacements for the element
             u = np.array([self.U[3 * node1], self.U[3 * node1 + 1], self.U[3 * node1 + 2], self.U[3 * node2], self.U[3 * node2 + 1], self.U[3 * node2 + 2]])
 
-            # Calculate the stress and force
-            stress = E / L * np.array([
-                [cos_x, cos_y, cos_z, -cos_x, -cos_y, -cos_z]
-            ]).dot(u)
-            force = Area * stress
 
-            # Add the stress and force to the list
-            stresses.append(stress)
-            forces.append(force)
+            # # Calculate the stress and force
+            # stress = E / L * np.array([
+            #     [cos_x, cos_y, cos_z, -cos_x, -cos_y, -cos_z]
+            # ]).dot(u)
+            # force = Area * stress
+
+            # # Add the stress and force to the list
+            # stresses.append(stress)
+            # forces.append(force)
 
         # Save the stresses and forces for later
         self.Stresses = stresses

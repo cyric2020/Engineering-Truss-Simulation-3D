@@ -78,6 +78,7 @@ class ViewTruss:
 
             # Calculate the opacity of the member based on the force
             opacity = abs(force) / maxForce
+            # opacity = 1
 
             # Plot the member
             if force < 0:
