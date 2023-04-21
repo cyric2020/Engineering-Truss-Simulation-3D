@@ -179,6 +179,7 @@ class Truss:
         # Calculate the stresses and internal forces in each member
         stresses = []
         forces = []
+        vector_shears = []
         for o, member in enumerate(self.Members):
             # Get the member information
             node1, node2, Material, Area = member
@@ -203,19 +204,48 @@ class Truss:
             u = np.array([self.U[3 * node1], self.U[3 * node1 + 1], self.U[3 * node1 + 2], self.U[3 * node2], self.U[3 * node2 + 1], self.U[3 * node2 + 2]])
 
 
-            # # Calculate the stress and force
-            # stress = E / L * np.array([
-            #     [cos_x, cos_y, cos_z, -cos_x, -cos_y, -cos_z]
-            # ]).dot(u)
-            # force = Area * stress
+            # Calculate the stress and force
+            stress = E / L * np.array([
+                [cos_x, cos_y, cos_z, -cos_x, -cos_y, -cos_z]
+            ]).dot(u)
+            force = Area * stress
 
-            # # Add the stress and force to the list
-            # stresses.append(stress)
-            # forces.append(force)
+            # Add the stress and force to the list
+            stresses.append(stress)
+            forces.append(force)
+
+            I = float(self.Materials[Material]['I'])
+
+            # Calculate the shear force
+            shear = E * I / L**3 * np.array([
+                [12 * cos_x**2 + 4 * cos_y**2 + 4 * cos_z**2, 6 * cos_x * cos_y, 6 * cos_x * cos_z, -12 * cos_x**2 - 4 * cos_y**2 - 4 * cos_z**2, 6 * cos_x * cos_y, 6 * cos_x * cos_z],
+                [6 * cos_x * cos_y, 4 * cos_x**2 + 12 * cos_y**2 + 4 * cos_z**2, 6 * cos_y * cos_z, -6 * cos_x * cos_y, -4 * cos_x**2 - 12 * cos_y**2 - 4 * cos_z**2, 6 * cos_y * cos_z],
+                [6 * cos_x * cos_z, 6 * cos_y * cos_z, 4 * cos_x**2 + 4 * cos_y**2 + 12 * cos_z**2, -6 * cos_x * cos_z, -6 * cos_y * cos_z, -4 * cos_x**2 - 4 * cos_y**2 - 12 * cos_z**2],
+                [-12 * cos_x**2 - 4 * cos_y**2 - 4 * cos_z**2, -6 * cos_x * cos_y, -6 * cos_x * cos_z, 12 * cos_x**2 + 4 * cos_y**2 + 4 * cos_z**2, -6 * cos_x * cos_y, -6 * cos_x * cos_z],
+                [6 * cos_x * cos_y, -4 * cos_x**2 - 12 * cos_y**2 - 4 * cos_z**2, -6 * cos_y * cos_z, -6 * cos_x * cos_y, 4 * cos_x**2 + 12 * cos_y**2 + 4 * cos_z**2, -6 * cos_y * cos_z],
+                [6 * cos_x * cos_z, 6 * cos_y * cos_z, -4 * cos_x**2 - 4 * cos_y**2 - 12 * cos_z**2, -6 * cos_x * cos_z, -6 * cos_y * cos_z, 4 * cos_x**2 + 4 * cos_y**2 + 12 * cos_z**2]
+            ]).dot(u)
+
+            # print(shear)
+
+            # What does the shear force mean?
+            # It is the force that is applied to the member in the x, y, and z directions
+            # why is it 6 x 1?
+            # It is 6 x 1 because it is the force in the x, y, and z directions for both nodes
+            # how can that be plotted?
+            # It can be plotted as a vector at the center of the member
+            # how can that vector be calculated?
+            # It can be calculated by taking the average of the forces at each node
+
+            vector_shear = np.array([shear[0][0] + shear[3][0], shear[1][0] + shear[4][0], shear[2][0] + shear[5][0]]) / 2
+            # print(vector_shear)
+            vector_shears.append(vector_shear)
 
         # Save the stresses and forces for later
         self.Stresses = stresses
         self.Forces = forces
+
+        self.Vector_Shears = vector_shears
 
         # Stop the timer
         end = time.time()

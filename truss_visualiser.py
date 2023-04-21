@@ -77,8 +77,8 @@ class ViewTruss:
             force = forces[member_index][0][0]
 
             # Calculate the opacity of the member based on the force
-            opacity = abs(force) / maxForce
-            # opacity = 1
+            # opacity = abs(force) / maxForce
+            opacity = 0.9
 
             # Plot the member
             if force < 0:
@@ -98,6 +98,16 @@ class ViewTruss:
                 # Add the member force with a lavender background
                 forceRounded = round(force, 4)
                 self.ax.text((x1+dx1+x2+dx2)/2, (y1+dy1+y2+dy2)/2, (z1+dz1+z2+dz2)/2, str(forceRounded), color='k', backgroundcolor='lavender', horizontalalignment='center', verticalalignment='center', transform=self.ax.transData)
+
+            # Plot the vector shear as an arrow from the centre of the member
+            shrink_fact = 0.0001
+            shear_vector = truss.Vector_Shears[member_index]
+            factor_shear_vector = shear_vector * shrink_fact
+
+            member_center = ((x1+dx1+x2+dx2)/2, (y1+dy1+y2+dy2)/2, (z1+dz1+z2+dz2)/2)
+            member_center_shear = (member_center[0] + factor_shear_vector[0], member_center[1] + factor_shear_vector[1], member_center[2] + factor_shear_vector[2])
+
+            self.ax.quiver(member_center[0], member_center[1], member_center[2], member_center_shear[0], member_center_shear[1], member_center_shear[2], color='g')
 
         # Show all the external forces
         if ExternalForces:

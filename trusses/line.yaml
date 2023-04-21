@@ -2,7 +2,7 @@ Materials:
   Steel:
     E: 200_000_000 # 200 GPa / 200 GN/m^2
     MaxStress: 8_000_000 # 8 GPa / 8 GN/m^2
-    NU: 0.28 # Poisson's ratio
+    I: 0.0001 # 0.0001 m^4
 
   Balsa:
     E: 3_710_000_000 # 3.71 GPa / 3.71 GN/m^2
