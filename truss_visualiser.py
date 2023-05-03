@@ -81,12 +81,28 @@ class ViewTruss:
             opacity = 0.9
 
             # Plot the member
-            if force < 0:
-                color = (0, 0, 1 * opacity)
-            elif force > 0:
-                color = (1 * opacity, (1-opacity)/2, (1-opacity)/2)
+            # if force < 0:
+            #     color = (0, 0, 1 * opacity)
+            # elif force > 0:
+            #     color = (1 * opacity, (1-opacity)/2, (1-opacity)/2)
+            # else:
+            #     color = (0, 1, 0)
+            strength = abs(force) / maxForce
+            invStrength = 1 - strength
+            invStrength = invStrength * 0.8
+
+            invStrength = 0
+
+            if abs(round(force, 2)) == 0:
+                invStrength = 0
+            
+            color = (0, 0, 0)
+            if round(force, 2) < 0:
+                color = (invStrength, invStrength, 1)
+            elif round(force, 2) > 0:
+                color = (1, invStrength, invStrength)
             else:
-                color = (0, 1, 0)
+                color = (invStrength, 1, invStrength)
                 
             self.ax.plot([x1+dx1, x2+dx2], [y1+dy1, y2+dy2], [z1+dz1, z2+dz2], color=color)
 
@@ -107,7 +123,7 @@ class ViewTruss:
             member_center = ((x1+dx1+x2+dx2)/2, (y1+dy1+y2+dy2)/2, (z1+dz1+z2+dz2)/2)
             member_center_shear = (member_center[0] + factor_shear_vector[0], member_center[1] + factor_shear_vector[1], member_center[2] + factor_shear_vector[2])
 
-            self.ax.quiver(member_center[0], member_center[1], member_center[2], member_center_shear[0], member_center_shear[1], member_center_shear[2], color='g')
+            # self.ax.quiver(member_center[0], member_center[1], member_center[2], member_center_shear[0], member_center_shear[1], member_center_shear[2], color='g')
 
         # Show all the external forces
         if ExternalForces:
@@ -129,6 +145,35 @@ class ViewTruss:
                 if z != 0:
                     self.ax.quiver(node[0], node[1], node[2], 0, 0, arrowLength, arrow_length_ratio=arrowHead, color='r')
                     self.ax.text(node[0], node[1], node[2]+arrowLength, str(z), color='k', backgroundcolor='w', horizontalalignment='center', verticalalignment='bottom', transform=self.ax.transData)
+
+    def showFailedMembers(self, truss):
+        forces = truss.Forces
+        # Plot all members
+        for member_index, member in enumerate(truss.Members):
+            # Extract member details
+            node1, node2, materialName, area = member
+
+            # Convert types
+            node1, node2, area = int(node1), int(node2), float(area)
+            
+            # Get node coordinates
+            x1, y1, z1 = truss.Nodes[node1]
+            x2, y2, z2 = truss.Nodes[node2]
+
+            # Get the material's maximum stress
+            maxStress = truss.Materials[materialName]['MaxStress']
+
+            # Get the member's force
+            force = forces[member_index]
+
+            # Check if the member's stress has exceeded the maximum stress
+            stress = abs(force) / area
+
+            # If the member has failed then plot it in red
+            if stress > maxStress:
+                self.ax.plot([x1, x2], [y1, y2], [z1, z2], 'r')
+            else:
+                self.ax.plot([x1, x2], [y1, y2], [z1, z2], 'k:')
 
     def cube_full(self):
         # Make the top bottom left and right margins 0

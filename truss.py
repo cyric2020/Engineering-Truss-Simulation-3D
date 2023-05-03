@@ -6,6 +6,7 @@ https://people.duke.edu/~hpgavin/cee421/truss-3d.pdf (carrying)
 """
 
 import numpy as np
+import scipy.linalg as la
 import yaml
 import time
 
@@ -34,7 +35,26 @@ class Truss:
         self.ExternalForces = np.array(data['ExternalForces'])
 
         # Get the supports
-        self.Supports = np.array(data['Supports'])
+        # self.Supports = np.array(data['Supports'])
+        tmpSupports = np.array(data['Supports'])
+
+        # If the length of supports is less than nodes then the none supports need to be added
+        if tmpSupports.shape[0] < self.Nodes.shape[0]:
+            # Supports are an array of arrays e.g. [0, PIN], [1, NONE], [2, PIN]
+            # BUT it can be setup with the none supports missing e.g. [0, PIN], [2, PIN]
+            # So we need to add the missing none supports
+            newSupports = []
+            for node_index, node in enumerate(self.Nodes):
+                # Check if the node is in the supports
+                if str(node_index) in tmpSupports[:,0]:
+                    # Get the support
+                    support = tmpSupports[tmpSupports[:,0] == str(node_index)][0][1]
+                    newSupports.append([node_index, support])
+                else:
+                    # Add the none support
+                    newSupports.append([node_index, 'NONE'])
+            
+            self.Supports = np.array(newSupports)
 
         self.Filename = filename
 
@@ -163,11 +183,13 @@ class Truss:
             removedDofs.append(dofs)
 
         # Check to see if the matrix is singular
-        if np.linalg.det(K_solve) == 0:
+        # if np.linalg.det(K_solve) == 0:
+        if la.det(K_solve) == 0:
             raise Exception("The matrix is singular.")
         
         # Solve for the nodal displacements U
         U_solve = np.linalg.solve(K_solve, F_solve)
+        # U_solve = la.solve(K_solve, F_solve)
 
         # Create the global displacements vector U
         U = np.zeros((n_dofs, 1))
