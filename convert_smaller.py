@@ -14,7 +14,8 @@ for i, joint in enumerate(joints):
 
     # divide by a constant for the scaled version
     # scale = 40
-    scale = 0.4
+    # scale = 0.4
+    scale = 0.01
     x /= scale
     y /= scale
     z /= scale
