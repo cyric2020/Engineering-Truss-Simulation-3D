@@ -55,8 +55,73 @@ class Truss:
                     newSupports.append([node_index, 'NONE'])
             
             self.Supports = np.array(newSupports)
+        else:
+            self.Supports = tmpSupports
 
         self.Filename = filename
+
+    def applySelfWeight(self):
+        # Loop through every node
+        for node_index, node in enumerate(self.Nodes):
+            # Get every member that is connected to the node
+            connected_members = []
+            for member_index, member in enumerate(self.Members):
+                # Check if the node is in the member
+                if int(member[0]) == node_index or int(member[1]) == node_index:
+                    connected_members.append(member)
+            
+            # Apply half the weight of each member to the node
+            totalForce = 0
+            for member in connected_members:
+                node_i, node_j, material, area = member
+
+                # Calculate the length of the member
+                L = np.sqrt((self.Nodes[int(node_j)][0] - self.Nodes[int(node_i)][0])**2 + (self.Nodes[int(node_j)][1] - self.Nodes[int(node_i)][1])**2 + (self.Nodes[int(node_j)][2] - self.Nodes[int(node_i)][2])**2)
+
+                # Get the density of the material
+                density = float(self.Materials[material]['Density'])
+
+                # Calculate the weight of the member
+                weight = density * float(area) * L * 9.81
+
+                # Add half the weight to the node
+                totalForce += weight / 2
+
+            # Add the force to the node
+            self.ExternalForces[node_index][2] -= totalForce
+
+    def calculateSelfWeight(self):
+        # Loop through every member and calculate the weight
+        totalWeight = 0
+        for member in self.Members:
+            node_i, node_j, material, area = member
+
+            node_i, node_j, material, area = int(node_i), int(node_j), self.Materials[material], float(area)
+
+            # Calculate the length of the member
+            L = np.sqrt((self.Nodes[node_j][0] - self.Nodes[node_i][0])**2 + (self.Nodes[node_j][1] - self.Nodes[node_i][1])**2 + (self.Nodes[node_j][2] - self.Nodes[node_i][2])**2)
+
+            # Get the density of the material
+            density = float(material['Density'])
+
+            # Calculate the weight of the member
+            weight = density * area * L * 9.81
+
+            # Add the weight to the total
+            totalWeight += weight
+
+        return totalWeight
+
+    def fails(self, fos=1):
+        # Check if any of the members exceed the MaxStress
+        for member_index, member in enumerate(self.Members):
+            stress = self.Stresses[member_index]
+            maxStress = float(self.Materials[member[2]]['MaxStress'])
+            # if stress > maxStress * fos:
+            if stress * fos > maxStress:
+                return True
+            
+        return False
 
     def solveTruss(self):
         """Solve the truss."""

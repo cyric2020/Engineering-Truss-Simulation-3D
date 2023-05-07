@@ -1,4 +1,6 @@
 from matplotlib import pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib as mpl
 import numpy as np
 
 class ViewTruss:
@@ -145,6 +147,64 @@ class ViewTruss:
                 if z != 0:
                     self.ax.quiver(node[0], node[1], node[2], 0, 0, arrowLength, arrow_length_ratio=arrowHead, color='r')
                     self.ax.text(node[0], node[1], node[2]+arrowLength, str(z), color='k', backgroundcolor='w', horizontalalignment='center', verticalalignment='bottom', transform=self.ax.transData)
+
+        # Create a legend detailing red as compression and blue as tension
+        red_patch = mpatches.Patch(color='red', label='Compression')
+        blue_patch = mpatches.Patch(color='blue', label='Tension')
+        green_patch = mpatches.Patch(color='green', label='Zero Force')
+        self.ax.legend(handles=[red_patch, blue_patch, green_patch])
+
+    def showForcesGradient(self, truss):
+        forces = truss.Forces
+        maxForce = max([abs(force) for force in forces])[0][0]
+        minForce = min([abs(force) for force in forces])[0][0]
+
+        # Define gradient colours
+        color1 = (0, 0, 1)
+        color2 = (1, 1, 0)
+        
+        # Plot all members with their color based on the force
+        for member_index, member in enumerate(truss.Members):
+            # Extract member details
+            node1, node2, materialName, area = member
+
+            # Convert types
+            node1, node2, area = int(node1), int(node2), float(area)
+            
+            # Get node coordinates
+            x1, y1, z1 = truss.Nodes[node1]
+            x2, y2, z2 = truss.Nodes[node2]
+
+            # Get the material's maximum stress
+            maxStress = truss.Materials[materialName]['MaxStress']
+
+            # Get the member's force
+            force = forces[member_index][0][0]
+
+            # Check if the member's stress has exceeded the maximum stress
+            stress = truss.Stresses[member_index][0][0]
+
+            # Display the member with its colour ranging from white to red based on the force
+            invStrength = 1 - abs(force) / maxForce
+            strength = abs(force) / maxForce
+
+            # range = [0, 0.8]
+
+            # invStrength is between 0 and 1, shift the values so they are in the range
+            # invStrength = invStrength * (range[1] - range[0]) + range[0]
+
+            # color = (invStrength, invStrength, invStrength)
+
+            # invStrength is a float between 0 and 1, use it to interpolate between color1 and color2
+            color = tuple([strength * (color2[i] - color1[i]) + color1[i] for i in range(3)])
+
+            # Plot the member
+            self.ax.plot([x1, x2], [y1, y2], [z1, z2], color=color)
+
+        # Set a gradient legend
+        cmap = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', [color1, color2], 256)
+        norm = mpl.colors.Normalize(vmin=minForce, vmax=maxForce)
+        self.ax.figure.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ax=self.ax, label='Force (N)', shrink=0.5)
 
     def showFailedMembers(self, truss):
         forces = truss.Forces
