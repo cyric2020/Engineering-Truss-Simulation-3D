@@ -49,9 +49,10 @@ errors = []
 # plt.show()
 # exit()
 
+kn = 6
 
 # Perform k-means clustering with 3 clusters
-kmeans = KMeans(n_clusters=4).fit(data.reshape(-1,1))
+kmeans = KMeans(n_clusters=kn).fit(data.reshape(-1,1))
 
 # Get the cluster labels for each data point
 labels = kmeans.labels_
@@ -65,13 +66,13 @@ labels = kmeans.labels_
 #     print()
 
 # Print the max force in each cluster
-for cluster in range(4):
+for cluster in range(kn):
     print(f'Cluster {cluster}:')
     print(max([data_point for data_point, label in zip(data, labels) if label == cluster]))
     print()
 
 # Print the member ids in each cluster
-for cluster in range(4):
+for cluster in range(kn):
     print(f'Cluster {cluster}:')
     for member_index, label in enumerate(labels):
         if label == cluster:
@@ -89,6 +90,16 @@ plt.xlabel('Absolute Force (N)')
 
 # Increase the padding on the bottom
 plt.subplots_adjust(bottom=0.5)
+
+# Create the legend with the different colors of the clusters
+for cluster in range(kn):
+    # plt.scatter([], [], c=f'C{cluster}', label=f'Cluster {cluster}')
+    # Get the correct color from the cmap
+    color = plt.cm.viridis(cluster / kn)
+    plt.scatter([], [], color=color, label=f'Cluster {cluster + 1}')
+
+# Show the legend
+plt.legend()
 
 # Show the plot
 plt.show()
