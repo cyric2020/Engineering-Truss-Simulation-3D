@@ -124,6 +124,34 @@ ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
 # Show the plot
 plt.show()
+
+# Generate table information
+# Columns: Member Index (Index), start node, end node, force, stress, area, cluster
+tablecsv = 'Index, Start Node, End Node, Force, Stress, Area, Cluster No., Max Stress\n'
+for memberId, member in enumerate(bridge.Members):
+    startNode, endNode, Material, Area = member
+    startNode, endNode, Material, Area = int(startNode), int(endNode), bridge.Materials[Material], float(Area)
+
+    # Get the force
+    force = bridge.Forces[memberId][0][0]
+
+    # Get the stress
+    stress = bridge.Stresses[memberId][0][0]
+
+    # Get the cluster
+    cluster = labels[memberId]
+
+    # Get the max stress from the material
+    maxStress = Material['MaxStress']
+
+    # Add the row to the table
+    tablecsv += f'{memberId},{startNode},{endNode},{force},{stress},{Area},{cluster},{maxStress}\n'
+
+# Write the table to a csv file
+with open('table.csv', 'w') as f:
+    f.write(tablecsv)
+    f.close()
+
 exit()
 
 # Plot the data points
