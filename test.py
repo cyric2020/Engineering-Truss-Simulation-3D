@@ -21,6 +21,44 @@ bridge.loadTruss('trusses/warren_rise.yaml')
 
 print(round(bridge.calculateSelfWeight(), 2), "Kg")
 
+# Apply precomputed clustered areas
+clusters = [
+    [7, 10, 11, 14, 27, 30, 35, 39, 40, 44, 50, 53, 62, 63, 70, 71, 78, 79, 86, 87],
+    [36, 37, 38, 41, 42, 43, 59, 66, 67, 74, 75, 82, 83, 90],
+    [0, 2, 20, 22, 25, 28, 52, 55],
+    [1, 3, 19, 21, 26, 29, 51, 54, 61, 64, 69, 72, 77, 80, 85, 88],
+    [4, 5, 6, 15, 16, 17, 18, 23, 24, 31, 32, 33, 34, 45, 46, 47, 48, 49, 56, 57, 58, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117],
+    [8, 9, 12, 13, 60, 65, 68, 73, 76, 81, 84, 89]
+]
+clusterAreas = [
+    0.0001,
+    0.000324,
+    0.000441,
+    0.000144,
+    0.000009,
+    0.000225
+]
+
+for clusterIndex, (cluster, clusterArea) in enumerate(zip(clusters, clusterAreas)):
+    # Also save each cluster to a new members and joints csv
+    members = ''
+    joints = ''
+    for memberId in cluster:
+        bridge.Members[memberId][3] = clusterArea
+        members += f'{bridge.Members[memberId][0]}, {bridge.Members[memberId][1]}\n'
+    
+    for joint in bridge.Nodes:
+        x, y, z = joint
+        x *= 100
+        y *= 100
+        z *= 100
+        joints += f'{x}, {z}, {y}\n'
+
+    with open(f'clusters/joints_{clusterIndex}.csv', 'w') as f:
+        f.write(joints)
+    with open(f'clusters/members_{clusterIndex}.csv', 'w') as f:
+        f.write(members)
+
 bridge.applySelfWeight()
 
 # Apply wind udl
@@ -37,35 +75,14 @@ report = ReportGenerator(bridge).report
 with open('report.txt', 'w') as f:
     f.write(report)
 
-# SMART_AREA = False
-# ROUND = True
-# if SMART_AREA:
-#     # Loop through each member in the truss
-#     for member_index, member in enumerate(bridge.Members):
-#         # Get the force, stress, area and material
-#         force = bridge.Forces[member_index]
-#         stress = bridge.Stresses[member_index]
-#         area = float(member[3])
-#         material = bridge.Materials[member[2]]
-
-#         # Calculate the new area
-#         new_area = area * (1 + stress / material['MaxStress'])[0][0]
-
-#         print(new_area)
-
-#         # Set the new area
-#         bridge.Members[member_index][3] = round(new_area, 2) + 0.01
-
-bridge.solveTruss()
-
 # print(bridge.U)
 
 # print(bridge.Forces)
 
 trussRenderer = ViewTruss()
 
-# if bridge.fails(fos=1.5):
-if bridge.fails(fos=5):
+if bridge.fails(fos=1.5):
+# if bridge.fails(fos=5):
 # if bridge.fails(fos=0.00000000001):
     print('Truss failed')
     # trussRenderer.showFailedMembers(bridge)

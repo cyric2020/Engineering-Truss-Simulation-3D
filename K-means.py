@@ -52,7 +52,7 @@ errors = []
 kn = 6
 
 # Perform k-means clustering with 3 clusters
-kmeans = KMeans(n_clusters=kn).fit(data.reshape(-1,1))
+kmeans = KMeans(n_clusters=kn, random_state=111).fit(data.reshape(-1,1))
 
 # Get the cluster labels for each data point
 labels = kmeans.labels_
@@ -68,7 +68,9 @@ labels = kmeans.labels_
 # Print the max force in each cluster
 for cluster in range(kn):
     print(f'Cluster {cluster}:')
-    print(max([data_point for data_point, label in zip(data, labels) if label == cluster]))
+    maxForce = max([data_point for data_point, label in zip(data, labels) if label == cluster])
+    # print(maxForce, maxForce/353333333)
+    print(maxForce, f'{maxForce/353333333:.20f}')
     print()
 
 # Print the member ids in each cluster
@@ -79,13 +81,13 @@ for cluster in range(kn):
             print(member_index, end=', ')
     print()
 
+colormap = plt.cm.jet # https://matplotlib.org/stable/tutorials/colors/colormaps.html 
 # Plot the bridge in 3D with the clusters as different colors
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 # Loop through all the clusters getting the members in each label
-colormap = plt.cm.jet # https://matplotlib.org/stable/tutorials/colors/colormaps.html 
-for cluster in range(4):
+for cluster in range(kn):
     members = [member for member, label in zip(bridge.Members, labels) if label == cluster]
 
     # Loop through each member
@@ -99,10 +101,10 @@ for cluster in range(4):
         x2, y2, z2 = node2
 
         # Plot the member using the colormap
-        ax.plot([x1, x2], [y1, y2], [z1, z2], c=colormap(cluster/4))
+        ax.plot([x1, x2], [y1, y2], [z1, z2], color=colormap(cluster/4))
 
     # Add that cluster to the legend
-    ax.scatter([], [], [], c=colormap(cluster/4), label=f'Cluster {cluster}')
+    ax.scatter([], [], [], color=colormap(cluster/4), label=f'Cluster {cluster}')
 
 # Add the legend
 ax.legend()
@@ -125,10 +127,12 @@ plt.show()
 exit()
 
 # Plot the data points
-plt.scatter(data, np.zeros_like(data), c=labels, cmap='viridis')
+# plt.scatter(data, np.zeros_like(data), c=labels, cmap=colormap)
+for cluster in range(kn):
+    plt.scatter(data[labels == cluster], np.zeros_like(data[labels == cluster]), color=colormap(cluster / kn))
 
 # Plot the cluster centers
-plt.scatter(kmeans.cluster_centers_, np.zeros_like(kmeans.cluster_centers_), c='red', marker='x', s=100)
+# plt.scatter(kmeans.cluster_centers_, np.zeros_like(kmeans.cluster_centers_), c='red', marker='x', s=100)
 
 # Set the x label
 plt.xlabel('Absolute Force (N)')
@@ -140,11 +144,11 @@ plt.subplots_adjust(bottom=0.5)
 for cluster in range(kn):
     # plt.scatter([], [], c=f'C{cluster}', label=f'Cluster {cluster}')
     # Get the correct color from the cmap
-    color = plt.cm.viridis(cluster / kn)
+    color = colormap(cluster / kn)
     plt.scatter([], [], color=color, label=f'Cluster {cluster + 1}')
 
 # Show the legend
-plt.legend()
+plt.legend(loc='upper center', ncol=kn, bbox_to_anchor=(0.5, 0.4))
 
 # Show the plot
 plt.show()
