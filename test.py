@@ -23,13 +23,19 @@ print(round(bridge.calculateSelfWeight(), 2), "Kg")
 
 bridge.applySelfWeight()
 
+# Apply wind udl
+# windUdlNodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 18, 19, 20, 24, 25, 26, 27, 28, 29, 36, 37, 38]
+# windForce = -2_908.54
+
+# for node in windUdlNodes:
+#     bridge.ExternalForces[node][1] += windForce
+
 bridge.solveTruss()
 
 # Save the report
 report = ReportGenerator(bridge).report
 with open('report.txt', 'w') as f:
     f.write(report)
-
 
 # SMART_AREA = False
 # ROUND = True
@@ -65,8 +71,8 @@ if bridge.fails(fos=5):
     # trussRenderer.showFailedMembers(bridge)
     trussRenderer.showForcesGradient(bridge)
 else:
-    # trussRenderer.showTruss(bridge, NodeLabels=False)
-    trussRenderer.showTrussDisplacements(bridge, bridge.U, bridge.Forces, MemberForces=False, ExternalForces=False)
+    trussRenderer.showTruss(bridge, NodeLabels=True)
+    # trussRenderer.showTrussDisplacements(bridge, bridge.U, bridge.Forces, MemberForces=False, ExternalForces=True)
     pass
 
 # Create a csv file for the member forces

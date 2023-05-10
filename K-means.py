@@ -78,6 +78,51 @@ for cluster in range(4):
             print(member_index, end=', ')
     print()
 
+# Plot the bridge in 3D with the clusters as different colors
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# Loop through all the clusters getting the members in each label
+colormap = plt.cm.jet # https://matplotlib.org/stable/tutorials/colors/colormaps.html 
+for cluster in range(4):
+    members = [member for member, label in zip(bridge.Members, labels) if label == cluster]
+
+    # Loop through each member
+    for member in members:
+        # Get the member nodes
+        node1 = bridge.Nodes[int(member[0])]
+        node2 = bridge.Nodes[int(member[1])]
+
+        # Get the node coordinates
+        x1, y1, z1 = node1
+        x2, y2, z2 = node2
+
+        # Plot the member using the colormap
+        ax.plot([x1, x2], [y1, y2], [z1, z2], c=colormap(cluster/4))
+
+    # Add that cluster to the legend
+    ax.scatter([], [], [], c=colormap(cluster/4), label=f'Cluster {cluster}')
+
+# Add the legend
+ax.legend()
+
+# Show the plot for fig
+max_range = np.array([bridge.Nodes[:,0].max()-bridge.Nodes[:,0].min(), bridge.Nodes[:,1].max()-bridge.Nodes[:,1].min(), bridge.Nodes[:,2].max()-bridge.Nodes[:,2].min()]).max() / 2.0
+
+# get the mid point of the axes
+mid_x = (bridge.Nodes[:,0].max()+bridge.Nodes[:,0].min()) * 0.5
+mid_y = (bridge.Nodes[:,1].max()+bridge.Nodes[:,1].min()) * 0.5
+mid_z = (bridge.Nodes[:,2].max()+bridge.Nodes[:,2].min()) * 0.5
+
+# set the axes limits
+ax.set_xlim(mid_x - max_range, mid_x + max_range)
+ax.set_ylim(mid_y - max_range, mid_y + max_range)
+ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+# Show the plot
+plt.show()
+exit()
+
 # Plot the data points
 plt.scatter(data, np.zeros_like(data), c=labels, cmap='viridis')
 

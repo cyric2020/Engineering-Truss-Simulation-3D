@@ -82,7 +82,7 @@ class Truss:
                 density = float(self.Materials[material]['Density'])
 
                 # Calculate the weight of the member
-                weight = density * float(area) * L * 9.81
+                weight = density * float(area) * L * 9.8
 
                 # Add half the weight to the node
                 totalForce += weight / 2
@@ -105,7 +105,7 @@ class Truss:
             density = float(material['Density'])
 
             # Calculate the weight of the member
-            weight = density * area * L * 9.81
+            weight = density * area * L
 
             # Add the weight to the total
             totalWeight += weight
