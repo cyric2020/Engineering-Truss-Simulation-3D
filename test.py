@@ -81,9 +81,9 @@ with open('report.txt', 'w') as f:
 
 trussRenderer = ViewTruss()
 
-if bridge.fails(fos=1.5):
+# if bridge.fails(fos=1.5):
 # if bridge.fails(fos=5):
-# if bridge.fails(fos=0.00000000001):
+if bridge.fails(fos=0.00000000001):
     print('Truss failed')
     # trussRenderer.showFailedMembers(bridge)
     trussRenderer.showForcesGradient(bridge)

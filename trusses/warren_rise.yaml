@@ -7,6 +7,11 @@ Materials:
     Density: 7800 # 8 g/cm^3 / 8000 kg/m^3
     I: 1
 
+  Plastic:
+    E: 633_830_000 # 633.83 MPa / 633.83 MN/m^2
+    MaxStress: 16_000_000
+    I: 1
+
 Joints: # Width: 3.2m
 # FLOOR JOINTS
 # Left Rise
