@@ -66,5 +66,9 @@ view = ViewTruss()
 # view.showTrussDisplacements(panel, panel.U, panel.Forces, MemberForces=False, ExternalForces=True)
 view.showTrussDisplacements(panel, panel.U, panel.Forces, MemberForces=True, ExternalForces=False)
 
-view.cube_full()
-view.show(panel)
+# view.cube_full()
+# view.show(panel)
+
+# Print out the report
+report = ReportGenerator(panel)
+print(report.report)

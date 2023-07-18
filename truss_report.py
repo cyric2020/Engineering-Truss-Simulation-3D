@@ -1,4 +1,5 @@
 import time
+import math
 
 def prettyifyNumber(number, decimals=4):
     # Return a string representation of the number with the correct number of decimal places and add commas to the number
@@ -140,11 +141,15 @@ class ReportGenerator:
 
         membersRows = []
         for i, member in enumerate(self.truss.Members):
+            # Calculate the member length
+            nodeI = self.truss.Nodes[int(member[NODEI])]
+            nodeJ = self.truss.Nodes[int(member[NODEJ])]
+            length = math.sqrt((nodeJ[0]-nodeI[0])**2 + (nodeJ[1]-nodeI[1])**2 + (nodeJ[2]-nodeI[2])**2)
             membersRows.append([
-                i, member[NODEI], member[NODEJ], member[MATERIAL], member[AREA], round(self.truss.Forces[i][0][0], 4), round(self.truss.Stresses[i][0][0], 4)
+                i, member[NODEI], member[NODEJ], member[MATERIAL], member[AREA], round(self.truss.Forces[i][0][0], 4), round(self.truss.Stresses[i][0][0], 4), round(length, 4)
             ])
 
-        info += generateTable(["Member ID", "Node I", "Node J", "Material", "Area", "Force", "Stress"], membersRows)
+        info += generateTable(["Member ID", "Node I", "Node J", "Material", "Area", "Force", "Stress", "Length"], membersRows)
         info += f"\n"
 
         return info
