@@ -152,7 +152,7 @@ class ViewTruss:
         red_patch = mpatches.Patch(color='red', label='Compression')
         blue_patch = mpatches.Patch(color='blue', label='Tension')
         green_patch = mpatches.Patch(color='green', label='Zero Force')
-        self.ax.legend(handles=[red_patch, blue_patch, green_patch])
+        self.ax.legend(handles=[red_patch, blue_patch, green_patch], loc='center right', bbox_to_anchor=(1.65, 0.5), ncols=2)
 
     def showForcesGradient(self, truss):
         forces = truss.Forces
@@ -205,6 +205,8 @@ class ViewTruss:
         cmap = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', [color1, color2], 256)
         norm = mpl.colors.Normalize(vmin=minForce, vmax=maxForce)
         self.ax.figure.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ax=self.ax, label='Force (N)', shrink=0.5)
+        # colorbar = self.ax.figure.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ax=self.ax, label='Force (N)', shrink=0.5)
+        # colorbar.ax.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
     def showFailedMembers(self, truss):
         forces = truss.Forces

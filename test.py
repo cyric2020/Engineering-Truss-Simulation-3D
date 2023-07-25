@@ -82,14 +82,14 @@ with open('report.txt', 'w') as f:
 trussRenderer = ViewTruss()
 
 # if bridge.fails(fos=1.5):
-# if bridge.fails(fos=5):
-if bridge.fails(fos=0.00000000001):
+if bridge.fails(fos=5):
+# if bridge.fails(fos=0.00000000001):
     print('Truss failed')
     # trussRenderer.showFailedMembers(bridge)
     trussRenderer.showForcesGradient(bridge)
 else:
-    trussRenderer.showTruss(bridge, NodeLabels=True)
-    # trussRenderer.showTrussDisplacements(bridge, bridge.U, bridge.Forces, MemberForces=False, ExternalForces=True)
+    # trussRenderer.showTruss(bridge, NodeLabels=True)
+    trussRenderer.showTrussDisplacements(bridge, bridge.U, bridge.Forces, MemberForces=False, ExternalForces=False)
     pass
 
 # Create a csv file for the member forces

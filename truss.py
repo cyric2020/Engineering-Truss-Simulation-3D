@@ -234,6 +234,8 @@ class Truss:
             else:
                 continue
 
+            # print(K_solve.shape)
+
             # Remove the rows and columns
             K_solve = np.delete(K_solve, dofs - removedOffset, axis=0)
             K_solve = np.delete(K_solve, dofs - removedOffset, axis=1)
@@ -247,6 +249,10 @@ class Truss:
             # Add the dofs to the removed dofs list
             removedDofs.append(dofs)
 
+        # print(K_solve)
+        # print(K_solve.reshape(3, -1))
+        # print(F_solve)
+
         # Check to see if the matrix is singular
         # if np.linalg.det(K_solve) == 0:
         if la.det(K_solve) == 0:
@@ -254,6 +260,7 @@ class Truss:
         
         # Solve for the nodal displacements U
         U_solve = np.linalg.solve(K_solve, F_solve)
+        # print(U_solve)
         # U_solve = la.solve(K_solve, F_solve)
 
         # Create the global displacements vector U
@@ -296,6 +303,7 @@ class Truss:
                 [cos_x, cos_y, cos_z, -cos_x, -cos_y, -cos_z]
             ]).dot(u)
             force = Area * stress
+            print(force)
 
             # Add the stress and force to the list
             stresses.append(stress)

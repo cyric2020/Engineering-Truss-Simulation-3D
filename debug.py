@@ -11,6 +11,6 @@ truss.loadTruss('code_test.yaml')
 # Solve the truss
 truss.solveTruss()
 
-print(truss.K)
-print(truss.F)
+# print(truss.K)
+# print(truss.F)
 # Print the local stiffness matrices
